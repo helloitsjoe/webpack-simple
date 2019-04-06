@@ -3,6 +3,10 @@ const makeJS = () => ({
   exclude: [/\.json$/, /node_modules/],
   use: {
     loader: 'babel-loader',
+    options: {
+      presets: ['@babel/preset-env', '@babel/preset-react'],
+      plugins: ['@babel/plugin-proposal-class-properties'],
+    },
   },
 });
 
@@ -34,7 +38,5 @@ const makeConfig = ({ js = true, css = true, ts = false } = {}) => ({
     rules: [js && makeJS(), css && makeCSS(), ts && makeTS()].filter(Boolean),
   },
 });
-
-console.log(makeConfig().module.rules);
 
 module.exports = makeConfig;
