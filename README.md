@@ -1,2 +1,3 @@
 # webpack-simple
-Webpack Config - Simple by default, extendable by design
+
+Webpack Config - Simple defaults, extendable options
