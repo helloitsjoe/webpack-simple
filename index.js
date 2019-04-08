@@ -1,3 +1,5 @@
+const path = require('path');
+
 const makeJS = () => ({
   test: /\.jsx?$/,
   exclude: [/\.json$/, /node_modules/],
@@ -33,7 +35,31 @@ const makeCSS = () => ({
   ],
 });
 
-const makeConfig = ({ js = true, css = true, ts = false } = {}) => ({
+const entry = {
+  path: path.resolve(__dirname, 'src'),
+  filename: 'index.js',
+};
+
+const output = {
+  path: path.resolve(__dirname, 'dist'),
+  filename: 'main.js',
+};
+
+const makeConfig = ({
+  entry,
+  output,
+  devtool,
+  target = 'web',
+  mode = 'development',
+  js = makeJS(),
+  css = makeCSS(),
+  ts,
+} = {}) => ({
+  mode,
+  entry,
+  output,
+  target,
+  devtool,
   module: {
     rules: [js && makeJS(), css && makeCSS(), ts && makeTS()].filter(Boolean),
   },
