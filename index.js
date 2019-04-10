@@ -1,59 +1,63 @@
-const path = require('path');
-
-const makeJS = () => ({
-  test: /\.jsx?$/,
-  exclude: [/\.json$/, /node_modules/],
-  use: {
+const defaultJSExclude = [/\.json$/, /node_modules/];
+const defaultBabelPresets = ['@babel/preset-env', '@babel/preset-react'];
+const defaultBabelPlugins = ['@babel/plugin-proposal-class-properties'];
+const defaultJSUse = [
+  {
     loader: 'babel-loader',
     options: {
-      presets: ['@babel/preset-env', '@babel/preset-react'],
-      plugins: ['@babel/plugin-proposal-class-properties'],
+      presets: defaultBabelPresets,
+      plugins: defaultBabelPlugins,
     },
   },
+];
+
+const makeJS = ({
+  exclude = defaultJSExclude,
+  // loader = 'babel-loader',
+  // presets = defaultBabelPresets,
+  // plugins = defaultBabelPlugins,
+  use = defaultJSUse,
+} = {}) => ({
+  test: /\.jsx?$/,
+  exclude,
+  use,
 });
 
-const makeTS = () => ({
-  test: /\.tsx?$/,
-  exclude: /node_modules/,
-  use: { loader: 'ts-loader' },
-});
+// const makeTS = () => ({
+//   test: /\.tsx?$/,
+//   exclude: [/node_modules/],
+//   use: [{ loader: 'ts-loader' }],
+// });
 
-const makeCSS = () => ({
+const defaultCSSLoaderOptions = { modules: true };
+const defaultCSSUse = [
+  {
+    loader: 'style-loader',
+  },
+  {
+    loader: 'css-loader',
+    options: defaultCSSLoaderOptions,
+  },
+  {
+    loader: 'sass-loader',
+    options: defaultCSSLoaderOptions,
+  },
+];
+
+const makeCSS = ({ use = defaultCSSUse } = {}) => ({
   test: /\.s?css$/,
-  use: [
-    {
-      loader: 'style-loader',
-    },
-    {
-      loader: 'css-loader',
-      options: { modules: true },
-    },
-    {
-      loader: 'sass-loader',
-      options: { modules: true },
-    },
-  ],
+  use,
 });
 
-const entry = {
-  path: path.resolve(__dirname, 'src'),
-  filename: 'index.js',
-};
+const defaultWebpackRules = [makeJS(), makeCSS()];
 
-const output = {
-  path: path.resolve(__dirname, 'dist'),
-  filename: 'main.js',
-};
-
-const makeConfig = ({
+const makeWebpackConfig = ({
   entry,
   output,
   devtool,
   target = 'web',
   mode = 'development',
-  js = makeJS(),
-  css = makeCSS(),
-  ts,
+  rules = defaultWebpackRules,
 } = {}) => ({
   mode,
   entry,
@@ -61,8 +65,19 @@ const makeConfig = ({
   target,
   devtool,
   module: {
-    rules: [js && makeJS(), css && makeCSS(), ts && makeTS()].filter(Boolean),
+    rules,
   },
 });
 
-module.exports = makeConfig;
+module.exports = {
+  makeWebpackConfig,
+  makeJS,
+  makeCSS,
+  defaultWebpackRules,
+  defaultBabelPlugins,
+  defaultBabelPresets,
+  defaultCSSLoaderOptions,
+  defaultCSSUse,
+  defaultJSExclude,
+  defaultJSUse,
+};
