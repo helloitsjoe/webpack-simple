@@ -12,6 +12,8 @@ npm i -D webpack-simple
 
 ## Basic Usage
 
+Webpack is great, but the configuration is verbose. Webpack 4 improved things with a config-less setup, but as soon as you want something beyond the defaults you need an entire config. This package aims to give you the best of both worlds: a simple config, with the ability to configure just the parts you want.
+
 ```js
 // webpack.config.js
 const { makeWebpackConfig } = require('webpack-simple');
@@ -20,7 +22,7 @@ module.exports = makeWebpackConfig();
 
 That's it!
 
-This will generate a webpack config in `development` mode, with `babel-loader` set up with React defaults, and css/sass loaders with `modules: true` by default. It's the equivalent of:
+This will generate a webpack config in `development` mode, with Babel/React and css/sass loaders. It's the equivalent of:
 
 ```js
 const config = {
@@ -50,7 +52,6 @@ const config = {
     ],
   },
 };
-module.exports = config;
 ```
 
 It's easy to add custom configuration:
@@ -69,4 +70,7 @@ const otherEntryAndOutput = makeWebpackConfig({
 
 You can add or overwrite entire module rules, or just add/overwrite/modify the default JS/CSS loaders:
 
-// TODO: example
+```js
+const noBabelReactCSS = makeWebpackConfig({ rules: [] });
+// TODO: More examples
+```
