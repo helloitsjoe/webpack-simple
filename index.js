@@ -13,15 +13,41 @@ const defaultJSUse = [
 
 const makeJS = ({
   exclude = defaultJSExclude,
-  // loader = 'babel-loader',
-  // presets = defaultBabelPresets,
-  // plugins = defaultBabelPlugins,
+  babelPresets,
+  babelPlugins,
   use = defaultJSUse,
-} = {}) => ({
-  test: /\.jsx?$/,
-  exclude,
-  use,
-});
+} = {}) => {
+  if (!babelPresets && !babelPlugins) {
+    return {
+      test: /\.jsx?$/,
+      exclude,
+      use,
+    };
+  }
+  const babelLoaderIndex = use.findIndex(use => use.loader === 'babel-loader');
+  if (babelLoaderIndex === -1) {
+    throw new Error('Babel options provided but no Babel loader found');
+  }
+
+  const babelLoader = use[babelLoaderIndex];
+  const useCopy = [
+    ...use.slice(0, babelLoaderIndex),
+    {
+      ...babelLoader,
+      options: {
+        ...babelLoader.options,
+        presets: babelPresets || babelLoader.options.presets,
+        plugins: babelPlugins || babelLoader.options.plugins,
+      },
+    },
+    ...use.slice(babelLoaderIndex + 1),
+  ];
+  return {
+    test: /\.jsx?$/,
+    exclude,
+    use: useCopy,
+  };
+};
 
 // const makeTS = () => ({
 //   test: /\.tsx?$/,

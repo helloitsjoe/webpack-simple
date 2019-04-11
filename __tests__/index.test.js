@@ -1,6 +1,9 @@
 const {
   makeWebpackConfig,
   defaultWebpackRules,
+  defaultBabelPlugins,
+  defaultBabelPresets,
+  defaultJSUse,
   makeJS,
   makeCSS,
 } = require('../index');
@@ -47,26 +50,109 @@ describe('makeWebpackConfig', () => {
 });
 
 describe('makeJS', () => {
-  xit('Has babel-loader as default config', () => {});
-  xit('Default JS test handles .js and .jsx', () => {});
-  xit('User can add to `use` array', () => {});
-  xit('User can overwrite `use` array', () => {});
-  xit('User can add to default babel presets', () => {});
-  xit('User can overwrite default babel presets', () => {});
-  xit('User can add to default babel plugins', () => {});
-  xit('User can overwrite default babel plugins', () => {});
-  xit('User can add to default `exclude` array', () => {});
-  xit('User can overwrite default `exclude` array', () => {});
+  const DEFAULT_JS_USE_LENGTH = 1;
+  const customUse = [{ loader: 'other-loader', options: { foo: 'bar' } }];
+  const customPresets = ['@babel/some-preset'];
+  const customPlugins = ['@babel/some-plugin'];
+
+  it('Has babel-loader as default config', () => {
+    const js = makeJS();
+    expect(js.use.length).toBe(DEFAULT_JS_USE_LENGTH);
+    expect(js.use.some(rule => rule.loader === 'babel-loader')).toBe(true);
+  });
+
+  it('Default JS test handles .js and .jsx', () => {
+    const { test } = makeJS();
+    expect(test.test('.js')).toBe(true);
+    expect(test.test('.jsx')).toBe(true);
+  });
+
+  it('User can add to `use` array', () => {
+    const js = makeJS({ use: [...defaultJSUse, ...customUse] });
+    expect(js.use.length).toBe(DEFAULT_JS_USE_LENGTH + 1);
+    expect(js.use).toEqual([...defaultJSUse, ...customUse]);
+  });
+
+  it('User can overwrite `use` array', () => {
+    const js = makeJS({ use: customUse });
+    expect(js.use.length).toBe(1);
+    expect(js.use).toEqual(customUse);
+  });
+
+  describe('Babel presets', () => {
+    it('User can add to default babel presets', () => {
+      const customPresetsWithDefaults = [
+        ...defaultBabelPresets,
+        ...customPresets,
+      ];
+      const js = makeJS({ babelPresets: customPresetsWithDefaults });
+      const babelLoader = js.use.find(use => use.loader === 'babel-loader');
+      expect(babelLoader.options.presets).toEqual(customPresetsWithDefaults);
+      expect(babelLoader.options.plugins).toEqual(defaultBabelPlugins);
+    });
+
+    it('User can overwrite default babel presets', () => {
+      const js = makeJS({ babelPresets: customPresets });
+      const babelLoader = js.use.find(use => use.loader === 'babel-loader');
+      expect(babelLoader.options.presets.length).toBe(1);
+      expect(babelLoader.options.presets).toEqual(customPresets);
+      expect(babelLoader.options.plugins).toEqual(defaultBabelPlugins);
+    });
+
+    it('Throws if babel presets are provided and babel-loader is not found', () => {
+      expect(() =>
+        makeJS({
+          babelPresets: customPresets,
+          use: [{ loader: 'bubble-loader' }],
+        })
+      ).toThrow('Babel options provided but no Babel loader found');
+    });
+  });
+
+  describe('Babel plugins', () => {
+    it('User can add to default babel plugins', () => {
+      const customPluginsWithDefaults = [
+        ...defaultBabelPlugins,
+        ...customPlugins,
+      ];
+      const js = makeJS({ babelPlugins: customPluginsWithDefaults });
+      const babelLoader = js.use.find(use => use.loader === 'babel-loader');
+      expect(babelLoader.options.plugins).toEqual(customPluginsWithDefaults);
+      expect(babelLoader.options.presets).toEqual(defaultBabelPresets);
+    });
+
+    it('User can overwrite default babel plugins', () => {
+      const js = makeJS({ babelPlugins: customPlugins });
+      const babelLoader = js.use.find(use => use.loader === 'babel-loader');
+      expect(babelLoader.options.plugins.length).toBe(1);
+      expect(babelLoader.options.plugins).toEqual(customPlugins);
+      expect(babelLoader.options.presets).toEqual(defaultBabelPresets);
+    });
+
+    it('Throws if babel plugins are provided and babel-loader is not found', () => {
+      expect(() =>
+        makeJS({
+          babelPlugins: customPlugins,
+          use: [{ loader: 'bubble-loader' }],
+        })
+      ).toThrow('Babel options provided but no Babel loader found');
+    });
+  });
+
+  describe('Exclude array', () => {
+    it('User can add to default `exclude` array', () => {});
+    it('User can overwrite default `exclude` array', () => {});
+  });
 });
 
 describe('makeCSS', () => {
-  xit('Uses style-loader, css-loader, and sass-loader by default', () => {});
-  xit('Default CSS test handles .css and .scss', () => {});
-  xit('User can add to `use` array', () => {});
-  xit('User can overwrite `use` array', () => {});
-  xit('css and sass loaders have `modules: true` by default', () => {});
-  xit('user can overwrite css-loader options', () => {});
-  xit('user can merge css-loader options', () => {});
-  xit('user can overwrite sass-loader options', () => {});
-  xit('user can merge sass-loader options', () => {});
+  it('Uses style-loader, css-loader, and sass-loader by default', () => {});
+  it('Default CSS test handles .css and .scss', () => {});
+  it('User can add to `use` array', () => {});
+  it('User can overwrite `use` array', () => {});
+  it('css and sass loaders have `modules: true` by default', () => {});
+  it('user can overwrite css-loader options', () => {});
+  it('user can merge css-loader options', () => {});
+  it('user can overwrite sass-loader options', () => {});
+  it('user can merge sass-loader options', () => {});
 });
