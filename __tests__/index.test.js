@@ -5,6 +5,7 @@ const {
   defaultBabelPresets,
   defaultJSExclude,
   defaultJSUse,
+  defaultCSSUse,
   makeJS,
   makeCSS,
 } = require('../index');
@@ -159,12 +160,50 @@ describe('makeJS', () => {
 });
 
 describe('makeCSS', () => {
-  it('Uses style-loader, css-loader, and sass-loader by default', () => {});
-  it('Default CSS test handles .css and .scss', () => {});
-  it('User can add to `use` array', () => {});
-  it('User can overwrite `use` array', () => {});
-  it('css and sass loaders have `modules: true` by default', () => {});
-  it('user can overwrite css-loader options', () => {});
+  it('Uses style-loader, css-loader, and sass-loader by default', () => {
+    const css = makeCSS();
+    expect(css.use.length).toBe(3);
+    expect(css.use.some(rule => rule.loader === 'style-loader')).toBe(true);
+    expect(css.use.some(rule => rule.loader === 'css-loader')).toBe(true);
+    expect(css.use.some(rule => rule.loader === 'sass-loader')).toBe(true);
+  });
+
+  it('Default CSS test handles .css and .scss', () => {
+    const css = makeCSS();
+    expect(css.test.test('.css')).toBe(true);
+    expect(css.test.test('.scss')).toBe(true);
+  });
+
+  it('css and sass loaders have `modules: true` by default', () => {
+    const css = makeCSS();
+    const cssLoader = css.use.find(loader => loader.loader === 'css-loader');
+    const sassLoader = css.use.find(loader => loader.loader === 'sass-loader');
+    expect(cssLoader.options.modules).toBe(true);
+    expect(sassLoader.options.modules).toBe(true);
+  });
+
+  it('User can add to `use` array', () => {
+    const customUseWithDefault = [
+      ...defaultCSSUse,
+      { loader: 'other-css-loader' },
+    ];
+    const css = makeCSS({ use: customUseWithDefault });
+    expect(css.use).toEqual(customUseWithDefault);
+  });
+
+  it('User can overwrite `use` array', () => {
+    const customUse = [{ loader: 'other-css-loader' }];
+    const css = makeCSS({ use: customUse });
+    expect(css.use).toEqual(customUse);
+  });
+
+  it('user can overwrite css-loader options', () => {
+    const newOptions = { modules: false };
+    const css = makeCSS({ cssLoaderOptions: newOptions });
+    const cssLoader = css.use.find(loader => loader.loader === 'css-loader');
+    expect(cssLoader.options).toEqual(newOptions);
+  });
+
   it('user can merge css-loader options', () => {});
   it('user can overwrite sass-loader options', () => {});
   it('user can merge sass-loader options', () => {});
