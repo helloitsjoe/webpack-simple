@@ -3,12 +3,14 @@ const {
   defaultWebpackRules,
   defaultBabelPlugins,
   defaultBabelPresets,
+  defaultJSExclude,
   defaultJSUse,
   makeJS,
   makeCSS,
 } = require('../index');
 
 const DEFAULT_RULES_LENGTH = 2;
+const DEFAULT_EXCLUDE_LENGTH = 2;
 
 describe('makeWebpackConfig', () => {
   const config = makeWebpackConfig();
@@ -140,8 +142,19 @@ describe('makeJS', () => {
   });
 
   describe('Exclude array', () => {
-    it('User can add to default `exclude` array', () => {});
-    it('User can overwrite default `exclude` array', () => {});
+    it('User can add to default `exclude` array', () => {
+      const customExclude = [...defaultJSExclude, /\.test.js$/];
+      const js = makeJS({ exclude: customExclude });
+      expect(js.exclude.length).toBe(DEFAULT_EXCLUDE_LENGTH + 1);
+      expect(js.exclude).toEqual(customExclude);
+    });
+
+    it('User can overwrite default `exclude` array', () => {
+      const customExclude = [/\.test.js$/];
+      const js = makeJS({ exclude: customExclude });
+      expect(js.exclude.length).toBe(1);
+      expect(js.exclude).toEqual(customExclude);
+    });
   });
 });
 
