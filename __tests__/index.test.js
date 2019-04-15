@@ -4,6 +4,7 @@ const {
   defaultBabelPlugins,
   defaultBabelPresets,
   defaultJSUse,
+  defaultCSSLoaderOptions,
   makeJS,
   makeCSS,
 } = require('../index');
@@ -151,8 +152,40 @@ describe('makeCSS', () => {
   it('User can add to `use` array', () => {});
   it('User can overwrite `use` array', () => {});
   it('css and sass loaders have `modules: true` by default', () => {});
-  it('user can overwrite css-loader options', () => {});
-  it('user can merge css-loader options', () => {});
-  it('user can overwrite sass-loader options', () => {});
-  it('user can merge sass-loader options', () => {});
+
+  it('user can overwrite css-loader options', () => {
+    const css = makeCSS({ cssLoaderOptions: { modules: false } });
+    const cssLoader = css.use.find(({ loader }) => loader === 'css-loader');
+    expect(cssLoader.options).toEqual({ modules: false });
+    // Make sure sass-loader options are unchanged
+    const sassLoader = css.use.find(({ loader }) => loader === 'sass-loader');
+    expect(sassLoader.options).toEqual(defaultCSSLoaderOptions);
+  });
+
+  it('user can merge css-loader options', () => {
+    const css = makeCSS({ cssLoaderOptions: { foo: false } });
+    const cssLoader = css.use.find(({ loader }) => loader === 'css-loader');
+    expect(cssLoader.options).toEqual({ modules: true, foo: false });
+    // Make sure sass-loader options are unchanged
+    const sassLoader = css.use.find(({ loader }) => loader === 'sass-loader');
+    expect(sassLoader.options).toEqual(defaultCSSLoaderOptions);
+  });
+
+  it('user can overwrite sass-loader options', () => {
+    const css = makeCSS({ sassLoaderOptions: { modules: false } });
+    // Make sure sass-loader options are unchanged
+    const cssLoader = css.use.find(({ loader }) => loader === 'css-loader');
+    expect(cssLoader.options).toEqual(defaultCSSLoaderOptions);
+    const sassLoader = css.use.find(({ loader }) => loader === 'sass-loader');
+    expect(sassLoader.options).toEqual({ modules: false });
+  });
+
+  it('user can merge sass-loader options', () => {
+    const css = makeCSS({ sassLoaderOptions: { foo: false } });
+    // Make sure sass-loader options are unchanged
+    const cssLoader = css.use.find(({ loader }) => loader === 'css-loader');
+    expect(cssLoader.options).toEqual(defaultCSSLoaderOptions);
+    const sassLoader = css.use.find(({ loader }) => loader === 'sass-loader');
+    expect(sassLoader.options).toEqual({ modules: true, foo: false });
+  });
 });

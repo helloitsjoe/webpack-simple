@@ -70,10 +70,56 @@ const defaultCSSUse = [
   },
 ];
 
-const makeCSS = ({ use = defaultCSSUse } = {}) => ({
-  test: /\.s?css$/,
-  use,
-});
+const makeCSS = ({
+  cssLoaderOptions,
+  sassLoaderOptions,
+  use = defaultCSSUse,
+} = {}) => {
+  if (!cssLoaderOptions && !sassLoaderOptions) {
+    return { test: /\.s?css$/, use };
+  }
+  let customUse = [];
+  if (cssLoaderOptions) {
+    const cssLoaderIndex = use.findIndex(use => use.loader === 'css-loader');
+    if (cssLoaderIndex === -1) {
+      throw new Error('CSS loader options provided but no CSS loader found');
+    }
+    const defaultCssLoader = use[cssLoaderIndex];
+    customUse = [
+      ...use.slice(0, cssLoaderIndex),
+      {
+        ...defaultCssLoader,
+        options: {
+          ...defaultCssLoader.options,
+          ...cssLoaderOptions,
+        },
+      },
+      ...use.slice(cssLoaderIndex + 1),
+    ];
+  }
+  if (sassLoaderOptions) {
+    const sassLoaderIndex = use.findIndex(use => use.loader === 'sass-loader');
+    if (sassLoaderIndex === -1) {
+      throw new Error('CSS loader options provided but no CSS loader found');
+    }
+    const defaultSassLoader = use[sassLoaderIndex];
+    customUse = [
+      ...use.slice(0, sassLoaderIndex),
+      {
+        ...defaultSassLoader,
+        options: {
+          ...defaultSassLoader.options,
+          ...sassLoaderOptions,
+        },
+      },
+      ...use.slice(sassLoaderIndex + 1),
+    ];
+  }
+  return {
+    test: /\.s?css$/,
+    use: customUse,
+  };
+};
 
 const defaultWebpackRules = [makeJS(), makeCSS()];
 
