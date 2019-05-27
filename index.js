@@ -100,7 +100,7 @@ const makeCSS = ({
   if (sassLoaderOptions) {
     const sassLoaderIndex = use.findIndex(use => use.loader === 'sass-loader');
     if (sassLoaderIndex === -1) {
-      throw new Error('CSS loader options provided but no CSS loader found');
+      throw new Error('SASS loader options provided but no SASS loader found');
     }
     const defaultSassLoader = use[sassLoaderIndex];
     customUse = [

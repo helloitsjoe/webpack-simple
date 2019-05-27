@@ -241,4 +241,19 @@ describe('makeCSS', () => {
     const sassLoader = css.use.find(({ loader }) => loader === 'sass-loader');
     expect(sassLoader.options).toEqual({ modules: true, foo: false });
   });
+
+  it('throws if CSS options with no CSS loader', () => {
+    const options = { use: [], cssLoaderOptions: { foo: true } };
+    expect(() => makeCSS(options)).toThrow(
+      'CSS loader options provided but no CSS loader found'
+    );
+  });
+
+  it('throws if SASS options with no SASS loader', () => {
+    const options = { use: [], sassLoaderOptions: { foo: true } };
+    expect(() => makeCSS(options)).toThrow(
+      'SASS loader options provided but no SASS loader found'
+    );
+  });
 });
+
