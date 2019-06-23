@@ -35,15 +35,15 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.jsx?$/,
         exclude: [/.json$/, /node_modules/],
-        use: {
+        use: [{
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env', '@babel/preset-react'],
             plugins: ['@babel/plugin-proposal-class-properties'],
           },
-        },
+        }],
       },
       {
         test: /\.s?css$/,
