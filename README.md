@@ -2,6 +2,10 @@
 
 Generates a webpack config with simple defaults and extendable options.
 
+[![Build Status](https://travis-ci.com/helloitsjoe/webpack-simple.svg?branch=master)](https://travis-ci.com/helloitsjoe/webpack-simple) 
+[![Coverage Status](https://coveralls.io/repos/github/helloitsjoe/webpack-simple/badge.svg?branch=master)](https://coveralls.io/github/helloitsjoe/webpack-simple?branch=master)
+[![npm](https://img.shields.io/npm/v/webpack-simple.svg)](https://www.npmjs.com/package/webpack-simple)
+
 ## Installation
 
 Install as a dev dependency:
