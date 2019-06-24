@@ -124,22 +124,36 @@ const makeCSS = ({
 const defaultWebpackRules = [makeJS(), makeCSS()];
 
 const makeWebpackConfig = ({
+  js,
+  css,
   entry,
   output,
   devtool,
   target = 'web',
   mode = 'development',
   rules = defaultWebpackRules,
-} = {}) => ({
-  mode,
-  entry,
-  output,
-  target,
-  devtool,
-  module: {
-    rules,
-  },
-});
+} = {}) => {
+  let customRules = rules;
+
+  if (js) {
+    customRules = rules.map(rule => (rule.test.test('.js') ? js : rule));
+  }
+
+  if (css) {
+    customRules = rules.map(rule => (rule.test.test('.css') ? css : rule));
+  }
+
+  return {
+    mode,
+    entry,
+    output,
+    target,
+    devtool,
+    module: {
+      rules: customRules,
+    },
+  };
+};
 
 module.exports = {
   makeWebpackConfig,

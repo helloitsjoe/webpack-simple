@@ -14,19 +14,23 @@ const {
 const DEFAULT_RULES_LENGTH = 2;
 const DEFAULT_EXCLUDE_LENGTH = 2;
 
+const customUse = [{ loader: 'other-loader', options: { foo: 'bar' } }];
+
 describe('makeWebpackConfig', () => {
   const config = makeWebpackConfig();
   const newRules = [{ test: /\.js$/, use: [{ loader: 'other-loader' }] }];
 
-  it.each`
-    key          | value
-    ${'mode'}    | ${'development'}
-    ${'target'}  | ${'web'}
-    ${'entry'}   | ${undefined}
-    ${'output'}  | ${undefined}
-    ${'devtool'} | ${undefined}
-  `('$key is $value by default', ({ key, value }) => {
-    expect(config[key]).toBe(value);
+  describe('defaults', () => {
+    it.each`
+      key          | value
+      ${'mode'}    | ${'development'}
+      ${'target'}  | ${'web'}
+      ${'entry'}   | ${undefined}
+      ${'output'}  | ${undefined}
+      ${'devtool'} | ${undefined}
+    `('$key is $value', ({ key, value }) => {
+      expect(config[key]).toBe(value);
+    });
   });
 
   it('Rules include js and css by default', () => {
@@ -51,11 +55,28 @@ describe('makeWebpackConfig', () => {
     expect(config.module.rules.length).toBe(1);
     expect(config.module.rules).toEqual(newRules);
   });
+
+  it('User can update JS', () => {
+    const js = makeJS({ use: customUse });
+    const config = makeWebpackConfig({ js });
+    expect(config.module.rules[0]).toEqual(js);
+    // Should not affect other rules
+    expect(config.module.rules[1]).toEqual(makeCSS());
+    expect(config.module.rules.length).toBe(2);
+  });
+
+  it('User can update CSS', () => {
+    const css = makeCSS({ use: customUse });
+    const config = makeWebpackConfig({ css });
+    expect(config.module.rules[1]).toBe(css);
+    // Should not affect other rules
+    expect(config.module.rules[0]).toEqual(makeJS());
+    expect(config.module.rules.length).toBe(2);
+  });
 });
 
 describe('makeJS', () => {
   const DEFAULT_JS_USE_LENGTH = 1;
-  const customUse = [{ loader: 'other-loader', options: { foo: 'bar' } }];
   const customPresets = ['@babel/some-preset'];
   const customPlugins = ['@babel/some-plugin'];
 
@@ -199,14 +220,6 @@ describe('makeCSS', () => {
   });
 
   it('user can overwrite css-loader options', () => {
-    const newOptions = { modules: false };
-    const css = makeCSS({ cssLoaderOptions: newOptions });
-    const cssLoader = css.use.find(loader => loader.loader === 'css-loader');
-    expect(cssLoader.options).toEqual(newOptions);
-  });
-
-
-  it('user can overwrite css-loader options', () => {
     const css = makeCSS({ cssLoaderOptions: { modules: false } });
     const cssLoader = css.use.find(({ loader }) => loader === 'css-loader');
     expect(cssLoader.options).toEqual({ modules: false });
@@ -256,4 +269,3 @@ describe('makeCSS', () => {
     );
   });
 });
-

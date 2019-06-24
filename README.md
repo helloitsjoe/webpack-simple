@@ -1,8 +1,8 @@
-# Webpack Config
+# Webpack Simple
 
 Generates a webpack config with simple defaults and extendable options.
 
-[![Build Status](https://travis-ci.com/helloitsjoe/webpack-simple.svg?branch=master)](https://travis-ci.com/helloitsjoe/webpack-simple) 
+[![Build Status](https://travis-ci.com/helloitsjoe/webpack-simple.svg?branch=master)](https://travis-ci.com/helloitsjoe/webpack-simple)
 [![Coverage Status](https://coveralls.io/repos/github/helloitsjoe/webpack-simple/badge.svg?branch=master)](https://coveralls.io/github/helloitsjoe/webpack-simple?branch=master)
 [![npm](https://img.shields.io/npm/v/webpack-simple.svg)](https://www.npmjs.com/package/webpack-simple)
 
@@ -37,13 +37,15 @@ const config = {
       {
         test: /\.jsx?$/,
         exclude: [/.json$/, /node_modules/],
-        use: [{
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env', '@babel/preset-react'],
-            plugins: ['@babel/plugin-proposal-class-properties'],
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env', '@babel/preset-react'],
+              plugins: ['@babel/plugin-proposal-class-properties'],
+            },
           },
-        }],
+        ],
       },
       {
         test: /\.s?css$/,
@@ -72,9 +74,57 @@ const otherEntryAndOutput = makeWebpackConfig({
 });
 ```
 
-You can add or overwrite entire module rules, or just add/overwrite/modify the default JS/CSS loaders:
+You can add or overwrite entire module rules:
 
 ```js
+const { defaultWebpackRules } = require('webpack-simple');
+
 const noBabelReactCSS = makeWebpackConfig({ rules: [] });
-// TODO: More examples
+const includeOtherRules = makeWebpackConfig({
+  rules: [...defaultWebpackRules, ...otherRules],
+});
+```
+
+...or just add/overwrite/modify the default JS/CSS loaders:
+
+```js
+const { makeJS } = require('webpack-simple');
+
+const customUse = [{ loader: 'other-loader', options: { foo: 'bar' } }];
+const customJSConfig = makeWebpackConfig({ js: makeJS({ use: customUse }) });
+const customCSSConfig = makeWebpackConfig({ css: makeCSS({ use: customUse }) });
+```
+
+The full config input options with defaults:
+
+```js
+makeWebpackConfig({
+  js, // Defaults to JS rule above
+  css, // Defaults to CSS rule above
+  rules, // Defaults to rules above
+  entry = undefined, // Falls back to Webpack's default: '/src/index.js'
+  output = undefined, // Falls back to Webpack's default '/dist/main.js'
+  devtool = undefined,
+  target = 'web',
+  mode = 'development',
+})
+```
+
+The full list of module exports:
+
+```js
+module.exports = {
+  makeWebpackConfig,
+  makeJS,
+  makeCSS,
+
+  // Defaults provided so you can overwrite parts of them
+  defaultWebpackRules,
+  defaultBabelPlugins,
+  defaultBabelPresets,
+  defaultJSExclude,
+  defaultJSUse,
+  defaultCSSLoaderOptions,
+  defaultCSSUse,
+};
 ```
