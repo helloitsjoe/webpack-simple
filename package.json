@@ -11,16 +11,26 @@
     "type": "git",
     "url": "git+https://github.com/helloitsjoe/webpack-simple.git"
   },
-  "keywords": [],
+  "husky": {
+    "hooks": {
+      "pre-push": "npm t"
+    }
+  },
+  "keywords": [
+    "webpack",
+    "config",
+    "react",
+    "babel"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/helloitsjoe/webpack-simple/issues"
   },
   "homepage": "https://github.com/helloitsjoe/webpack-simple#readme",
-  "dependencies": {},
   "devDependencies": {
     "coveralls": "^3.0.4",
+    "husky": "^2.5.0",
     "jest": "^24.7.1",
     "prettier": "^1.16.4"
   },
