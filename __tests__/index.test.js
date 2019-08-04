@@ -61,21 +61,43 @@ describe('makeWebpackConfig', () => {
     expect(config.module.rules.length).toBe(2);
   });
 
-  it('User can add exclude field', () => {
-    const reactObj = { react: 'react' };
-    const excludeConfig = makeWebpackConfig({ exclude: reactObj });
-    expect(excludeConfig.exclude).toBe(reactObj);
+  describe('config options', () => {
+    const testObject = { foo: 'bar' };
+    it.each`
+      option           | value
+      ${'mode'}        | ${'production'}
+      ${'target'}      | ${'node'}
+      ${'devtool'}     | ${'source-map'}
+      ${'entry'}       | ${testObject}
+      ${'serve'}       | ${testObject}
+      ${'stats'}       | ${testObject}
+      ${'output'}      | ${testObject}
+      ${'plugins'}     | ${testObject}
+      ${'resolve'}     | ${testObject}
+      ${'externals'}   | ${testObject}
+      ${'devServer'}   | ${testObject}
+      ${'performance'} | ${testObject}
+    `('User can update $option', ({ option, value }) => {
+      const config = makeWebpackConfig({ [option]: value });
+      expect(config[option]).toBe(value);
+    });
   });
 
   describe('defaults', () => {
     it.each`
-      key          | value
-      ${'mode'}    | ${'development'}
-      ${'target'}  | ${'web'}
-      ${'entry'}   | ${undefined}
-      ${'output'}  | ${undefined}
-      ${'devtool'} | ${undefined}
-      ${'exclude'} | ${undefined}
+      key              | value
+      ${'mode'}        | ${'development'}
+      ${'target'}      | ${'web'}
+      ${'serve'}       | ${undefined}
+      ${'stats'}       | ${undefined}
+      ${'entry'}       | ${undefined}
+      ${'output'}      | ${undefined}
+      ${'devtool'}     | ${undefined}
+      ${'plugins'}     | ${undefined}
+      ${'resolve'}     | ${undefined}
+      ${'externals'}   | ${undefined}
+      ${'devServer'}   | ${undefined}
+      ${'performance'} | ${undefined}
     `('$key is $value', ({ key, value }) => {
       expect(config[key]).toBe(value);
     });
