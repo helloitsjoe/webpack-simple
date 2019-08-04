@@ -102,11 +102,21 @@ makeWebpackConfig({
   js, // Defaults to JS rule above
   css, // Defaults to CSS rule above
   rules, // Defaults to rules above
-  entry = undefined, // Falls back to Webpack's default: '/src/index.js'
-  output = undefined, // Falls back to Webpack's default '/dist/main.js'
-  devtool = undefined,
   target = 'web',
   mode = 'development',
+
+  // All top-level webpack config options are available
+  // as input options (all default to undefined)
+  serve,
+  stats,
+  entry, // Falls back to Webpack's default: '/src/index.js'
+  output, // Falls back to Webpack's default '/dist/main.js'
+  devtool,
+  resolve,
+  plugins,
+  externals,
+  devServer,
+  performance,
 })
 ```
 
