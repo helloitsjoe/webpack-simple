@@ -16,7 +16,10 @@ npm i -D webpack-simple
 
 ## Basic Usage
 
-Webpack is great, but the configuration is verbose. Webpack 4 improved things with a config-less setup, but as soon as you want something beyond the defaults you need an entire config. This package aims to give you the best of both worlds: a simple config, with the ability to configure just the parts you want.
+Webpack is great, but the configuration is verbose. Webpack 4 improved things
+with a config-less setup, but as soon as you want something beyond the defaults
+you need an entire config. This package aims to give you the best of both
+worlds: a simple config, with the ability to configure just the parts you want.
 
 ```js
 // webpack.config.js
@@ -26,7 +29,8 @@ module.exports = makeWebpackConfig();
 
 That's it!
 
-This will generate a webpack config in `development` mode, with Babel/React and css/sass loaders. It's the equivalent of:
+This will generate a webpack config in `development` mode, with Babel/React and
+css/sass loaders. It's the equivalent of:
 
 ```js
 const config = {
@@ -85,14 +89,60 @@ const includeOtherRules = makeWebpackConfig({
 });
 ```
 
-...or just add/overwrite/modify the default JS/CSS loaders:
+...or keep the above rules and just add/modify the default JS/CSS loaders:
 
 ```js
-const { makeJS } = require('webpack-simple');
+const { makeJS, makeCSS } = require('webpack-simple');
 
-const customUse = [{ loader: 'other-loader', options: { foo: 'bar' } }];
-const customJSConfig = makeWebpackConfig({ js: makeJS({ use: customUse }) });
-const customCSSConfig = makeWebpackConfig({ css: makeCSS({ use: customUse }) });
+const use = [{ loader: 'other-loader', options: { foo: 'bar' } }];
+
+const js = makeJS({ use });
+const css = makeCSS({ use });
+
+const customJSConfig = makeWebpackConfig({ js });
+const customCSSConfig = makeWebpackConfig({ css });
+```
+
+By default, `makeJS` and `makeCSS` will return the JS/CSS rules in the config
+above.
+
+`makeJS` allows you to modify/override `use`, `exclude`, `babelPresets`, and
+`babelPlugins`.
+
+```js
+const customJS = makeJS({ exclude: /testing/, babelPresets: 'some-preset' });
+
+// customJS returns:
+// {
+//   test: /\.jsx?$/,
+//   exclude: [/testing/],
+//   use: [
+//     {
+//       loader: 'babel-loader',
+//       options: {
+//         presets: ['some-preset'],
+//         plugins: ['@babel/plugin-proposal-class-properties'],
+//       },
+//     },
+//   ],
+// }
+```
+
+`makeCSS` allows you to modify/override `use`, `cssLoaderOptions`, and
+`sassLoaderOptions`.
+
+```js
+const customCSS = makeCSS({ cssLoaderOptions: { foo: 'bar' } });
+
+// customCSS returns:
+// {
+//   test: /\.s?css$/,
+//   use: [
+//     { loader: 'style-loader' },
+//     { loader: 'css-loader', options: { foo: 'bar' } },
+//     { loader: 'sass-loader', options: { modules: true } },
+//   ],
+// }
 ```
 
 The full config input options with defaults:
@@ -106,18 +156,19 @@ makeWebpackConfig({
   mode = 'development',
 
   // All top-level webpack config options are available
-  // as input options (all default to undefined)
-  serve,
-  stats,
+  // as input options (all default to undefined):
+
   entry, // Falls back to Webpack's default: '/src/index.js'
   output, // Falls back to Webpack's default '/dist/main.js'
+  serve,
+  stats,
   devtool,
   resolve,
   plugins,
   externals,
   devServer,
   performance,
-})
+});
 ```
 
 The full list of module exports:
