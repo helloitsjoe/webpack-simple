@@ -20,19 +20,6 @@ describe('makeWebpackConfig', () => {
   const config = makeWebpackConfig();
   const newRules = [{ test: /\.js$/, use: [{ loader: 'other-loader' }] }];
 
-  describe('defaults', () => {
-    it.each`
-      key          | value
-      ${'mode'}    | ${'development'}
-      ${'target'}  | ${'web'}
-      ${'entry'}   | ${undefined}
-      ${'output'}  | ${undefined}
-      ${'devtool'} | ${undefined}
-    `('$key is $value', ({ key, value }) => {
-      expect(config[key]).toBe(value);
-    });
-  });
-
   it('Rules include js and css by default', () => {
     expect(config.module.rules.length).toBe(DEFAULT_RULES_LENGTH);
     expect(config.module.rules[0]).toEqual(makeJS());
@@ -72,6 +59,26 @@ describe('makeWebpackConfig', () => {
     // Should not affect other rules
     expect(config.module.rules[0]).toEqual(makeJS());
     expect(config.module.rules.length).toBe(2);
+  });
+
+  it('User can add exclude field', () => {
+    const reactObj = { react: 'react' };
+    const excludeConfig = makeWebpackConfig({ exclude: reactObj });
+    expect(excludeConfig.exclude).toBe(reactObj);
+  });
+
+  describe('defaults', () => {
+    it.each`
+      key          | value
+      ${'mode'}    | ${'development'}
+      ${'target'}  | ${'web'}
+      ${'entry'}   | ${undefined}
+      ${'output'}  | ${undefined}
+      ${'devtool'} | ${undefined}
+      ${'exclude'} | ${undefined}
+    `('$key is $value', ({ key, value }) => {
+      expect(config[key]).toBe(value);
+    });
   });
 });
 

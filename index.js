@@ -129,6 +129,7 @@ const makeWebpackConfig = ({
   entry,
   output,
   devtool,
+  exclude,
   target = 'web',
   mode = 'development',
   rules = defaultWebpackRules,
@@ -149,6 +150,7 @@ const makeWebpackConfig = ({
     output,
     target,
     devtool,
+    exclude,
     module: {
       rules: customRules,
     },
