@@ -29,10 +29,10 @@
   },
   "homepage": "https://github.com/helloitsjoe/webpack-simple#readme",
   "devDependencies": {
-    "coveralls": "^3.0.4",
-    "husky": "^2.5.0",
-    "jest": "^24.7.1",
-    "prettier": "^1.16.4"
+    "coveralls": "^3.0.11",
+    "husky": "^2.7.0",
+    "jest": "^24.9.0",
+    "prettier": "^1.19.1"
   },
   "peerDependencies": {
     "webpack": "^4"
