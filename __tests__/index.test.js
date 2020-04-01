@@ -20,6 +20,16 @@ describe('makeWebpackConfig', () => {
   const config = makeWebpackConfig();
   const newRules = [{ test: /\.js$/, use: [{ loader: 'other-loader' }] }];
 
+  const originalWarn = console.warn;
+
+  beforeEach(() => {
+    console.warn = jest.fn();
+  });
+
+  afterEach(() => {
+    console.warn = originalWarn;
+  });
+
   it('Rules include js and css by default', () => {
     expect(config.module.rules.length).toBe(DEFAULT_RULES_LENGTH);
     expect(config.module.rules[0]).toEqual(makeJS());
@@ -61,45 +71,69 @@ describe('makeWebpackConfig', () => {
     expect(config.module.rules.length).toBe(2);
   });
 
-  describe('config options', () => {
-    const testObject = { foo: 'bar' };
-    it.each`
-      option           | value
-      ${'mode'}        | ${'production'}
-      ${'target'}      | ${'node'}
-      ${'devtool'}     | ${'source-map'}
-      ${'entry'}       | ${testObject}
-      ${'serve'}       | ${testObject}
-      ${'stats'}       | ${testObject}
-      ${'output'}      | ${testObject}
-      ${'plugins'}     | ${testObject}
-      ${'resolve'}     | ${testObject}
-      ${'externals'}   | ${testObject}
-      ${'devServer'}   | ${testObject}
-      ${'performance'} | ${testObject}
-    `('User can update $option', ({ option, value }) => {
-      const config = makeWebpackConfig({ [option]: value });
-      expect(config[option]).toBe(value);
+  it('default config', () => {
+    expect(config).toEqual({
+      mode: 'development',
+      target: 'web',
+      module: {
+        rules: [
+          {
+            exclude: [/\.json$/, /node_modules/],
+            test: /\.jsx?$/,
+            use: [
+              {
+                loader: 'babel-loader',
+                options: {
+                  plugins: ['@babel/plugin-proposal-class-properties'],
+                  presets: ['@babel/preset-env', '@babel/preset-react'],
+                },
+              },
+            ],
+          },
+          {
+            test: /\.s?css$/,
+            use: [
+              { loader: 'style-loader' },
+              { loader: 'css-loader', options: { modules: true } },
+              { loader: 'sass-loader', options: { modules: true } },
+            ],
+          },
+        ],
+      },
     });
   });
 
-  describe('defaults', () => {
+  describe('config options', () => {
+    const testObject = { foo: 'bar' };
     it.each`
-      key              | value
-      ${'mode'}        | ${'development'}
-      ${'target'}      | ${'web'}
-      ${'serve'}       | ${undefined}
-      ${'stats'}       | ${undefined}
-      ${'entry'}       | ${undefined}
-      ${'output'}      | ${undefined}
-      ${'devtool'}     | ${undefined}
-      ${'plugins'}     | ${undefined}
-      ${'resolve'}     | ${undefined}
-      ${'externals'}   | ${undefined}
-      ${'devServer'}   | ${undefined}
-      ${'performance'} | ${undefined}
-    `('$key is $value', ({ key, value }) => {
-      expect(config[key]).toBe(value);
+      option            | value
+      ${'mode'}         | ${'production'}
+      ${'target'}       | ${'node'}
+      ${'devtool'}      | ${'source-map'}
+      ${'node'}         | ${testObject}
+      ${'entry'}        | ${testObject}
+      ${'serve'}        | ${testObject}
+      ${'stats'}        | ${testObject}
+      ${'watch'}        | ${testObject}
+      ${'output'}       | ${testObject}
+      ${'plugins'}      | ${testObject}
+      ${'resolve'}      | ${testObject}
+      ${'externals'}    | ${testObject}
+      ${'devServer'}    | ${testObject}
+      ${'experiments'}  | ${testObject}
+      ${'performance'}  | ${testObject}
+      ${'optimization'} | ${testObject}
+      ${'watchOptions'} | ${testObject}
+    `('User can update $option', ({ option, value }) => {
+      const config = makeWebpackConfig({ [option]: value });
+      expect(config[option]).toBe(value);
+      expect(console.warn).not.toBeCalled();
+    });
+
+    it('warns (but allows) unrecognized config options', () => {
+      const config = makeWebpackConfig({ foo: 'bar' });
+      expect(config.foo).toBe('bar');
+      expect(console.warn).toBeCalled();
     });
   });
 });
@@ -135,10 +169,7 @@ describe('makeJS', () => {
 
   describe('Babel presets', () => {
     it('User can add to default babel presets', () => {
-      const customPresetsWithDefaults = [
-        ...defaultBabelPresets,
-        ...customPresets,
-      ];
+      const customPresetsWithDefaults = [...defaultBabelPresets, ...customPresets];
       const js = makeJS({ babelPresets: customPresetsWithDefaults });
       const babelLoader = js.use.find(use => use.loader === 'babel-loader');
       expect(babelLoader.options.presets).toEqual(customPresetsWithDefaults);
@@ -165,10 +196,7 @@ describe('makeJS', () => {
 
   describe('Babel plugins', () => {
     it('User can add to default babel plugins', () => {
-      const customPluginsWithDefaults = [
-        ...defaultBabelPlugins,
-        ...customPlugins,
-      ];
+      const customPluginsWithDefaults = [...defaultBabelPlugins, ...customPlugins];
       const js = makeJS({ babelPlugins: customPluginsWithDefaults });
       const babelLoader = js.use.find(use => use.loader === 'babel-loader');
       expect(babelLoader.options.plugins).toEqual(customPluginsWithDefaults);
@@ -234,10 +262,7 @@ describe('makeCSS', () => {
   });
 
   it('User can add to `use` array', () => {
-    const customUseWithDefault = [
-      ...defaultCSSUse,
-      { loader: 'other-css-loader' },
-    ];
+    const customUseWithDefault = [...defaultCSSUse, { loader: 'other-css-loader' }];
     const css = makeCSS({ use: customUseWithDefault });
     expect(css.use).toEqual(customUseWithDefault);
   });
@@ -286,15 +311,11 @@ describe('makeCSS', () => {
 
   it('throws if CSS options with no CSS loader', () => {
     const options = { use: [], cssLoaderOptions: { foo: true } };
-    expect(() => makeCSS(options)).toThrow(
-      'CSS loader options provided but no CSS loader found'
-    );
+    expect(() => makeCSS(options)).toThrow('CSS loader options provided but no CSS loader found');
   });
 
   it('throws if SASS options with no SASS loader', () => {
     const options = { use: [], sassLoaderOptions: { foo: true } };
-    expect(() => makeCSS(options)).toThrow(
-      'SASS loader options provided but no SASS loader found'
-    );
+    expect(() => makeCSS(options)).toThrow('SASS loader options provided but no SASS loader found');
   });
 });

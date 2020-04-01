@@ -123,23 +123,37 @@ const makeCSS = ({
 
 const defaultWebpackRules = [makeJS(), makeCSS()];
 
-const makeWebpackConfig = ({
-  js,
-  css,
-  serve,
-  stats,
-  entry,
-  output,
-  resolve,
-  devtool,
-  plugins,
-  externals,
-  devServer,
-  performance,
-  target = 'web',
-  mode = 'development',
-  rules = defaultWebpackRules,
-} = {}) => {
+const makeWebpackConfig = (options = {}) => {
+  const {
+    js,
+    css,
+    node,
+    serve,
+    stats,
+    entry,
+    watch,
+    output,
+    resolve,
+    devtool,
+    plugins,
+    externals,
+    devServer,
+    performance,
+    experiments,
+    watchOptions,
+    optimization,
+    target = 'web',
+    mode = 'development',
+    rules = defaultWebpackRules,
+    ...rest
+  } = options;
+
+  if (Object.keys(rest).length) {
+    for (const key in rest) {
+      console.warn(`${key} is unrecognized, but it will be added to the config.`);
+    }
+  }
+
   let customRules = rules;
 
   if (js) {
@@ -151,18 +165,9 @@ const makeWebpackConfig = ({
   }
 
   return {
+    ...options,
     mode,
-    serve,
-    stats,
-    entry,
-    output,
     target,
-    resolve,
-    devtool,
-    plugins,
-    externals,
-    devServer,
-    performance,
     module: {
       rules: customRules,
     },
