@@ -95,7 +95,7 @@ describe('makeWebpackConfig', () => {
             use: [
               { loader: 'style-loader' },
               { loader: 'css-loader', options: { modules: true } },
-              { loader: 'sass-loader', options: { modules: true } },
+              { loader: 'sass-loader' },
             ],
           },
         ],
@@ -253,12 +253,10 @@ describe('makeCSS', () => {
     expect(css.test.test('.scss')).toBe(true);
   });
 
-  it('css and sass loaders have `modules: true` by default', () => {
+  it('css loader has `modules: true` by default', () => {
     const css = makeCSS();
     const cssLoader = css.use.find(loader => loader.loader === 'css-loader');
-    const sassLoader = css.use.find(loader => loader.loader === 'sass-loader');
     expect(cssLoader.options.modules).toBe(true);
-    expect(sassLoader.options.modules).toBe(true);
   });
 
   it('User can add to `use` array', () => {
@@ -279,7 +277,7 @@ describe('makeCSS', () => {
     expect(cssLoader.options).toEqual({ modules: false });
     // Make sure sass-loader options are unchanged
     const sassLoader = css.use.find(({ loader }) => loader === 'sass-loader');
-    expect(sassLoader.options).toEqual(defaultCSSLoaderOptions);
+    expect(sassLoader.options).toBeUndefined();
   });
 
   it('user can merge css-loader options', () => {
@@ -288,25 +286,16 @@ describe('makeCSS', () => {
     expect(cssLoader.options).toEqual({ modules: true, foo: false });
     // Make sure sass-loader options are unchanged
     const sassLoader = css.use.find(({ loader }) => loader === 'sass-loader');
-    expect(sassLoader.options).toEqual(defaultCSSLoaderOptions);
+    expect(sassLoader.options).toBeUndefined();
   });
 
   it('user can overwrite sass-loader options', () => {
-    const css = makeCSS({ sassLoaderOptions: { modules: false } });
+    const css = makeCSS({ sassLoaderOptions: { foo: 'bar' } });
     // Make sure sass-loader options are unchanged
     const cssLoader = css.use.find(({ loader }) => loader === 'css-loader');
     expect(cssLoader.options).toEqual(defaultCSSLoaderOptions);
     const sassLoader = css.use.find(({ loader }) => loader === 'sass-loader');
-    expect(sassLoader.options).toEqual({ modules: false });
-  });
-
-  it('user can merge sass-loader options', () => {
-    const css = makeCSS({ sassLoaderOptions: { foo: false } });
-    // Make sure sass-loader options are unchanged
-    const cssLoader = css.use.find(({ loader }) => loader === 'css-loader');
-    expect(cssLoader.options).toEqual(defaultCSSLoaderOptions);
-    const sassLoader = css.use.find(({ loader }) => loader === 'sass-loader');
-    expect(sassLoader.options).toEqual({ modules: true, foo: false });
+    expect(sassLoader.options).toEqual({ foo: 'bar' });
   });
 
   it('throws if CSS options with no CSS loader', () => {

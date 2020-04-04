@@ -56,7 +56,7 @@ const config = {
         use: [
           { loader: 'style-loader' },
           { loader: 'css-loader', options: { modules: true } },
-          { loader: 'sass-loader', options: { modules: true } },
+          { loader: 'sass-loader' },
         ],
       },
     ],
@@ -140,7 +140,7 @@ const customCSS = makeCSS({ cssLoaderOptions: { foo: 'bar' } });
 //   use: [
 //     { loader: 'style-loader' },
 //     { loader: 'css-loader', options: { foo: 'bar' } },
-//     { loader: 'sass-loader', options: { modules: true } },
+//     { loader: 'sass-loader' },
 //   ],
 // }
 ```
@@ -158,16 +158,21 @@ makeWebpackConfig({
   // All top-level webpack config options are available
   // as input options (all default to undefined):
 
+  node,
   entry, // Falls back to Webpack's default: '/src/index.js'
   output, // Falls back to Webpack's default '/dist/main.js'
   serve,
   stats,
+  watch,
   devtool,
   resolve,
   plugins,
   externals,
   devServer,
   performance,
+  experiments,
+  watchOptions,
+  optimization,
 });
 ```
 

@@ -66,15 +66,10 @@ const defaultCSSUse = [
   },
   {
     loader: 'sass-loader',
-    options: defaultCSSLoaderOptions,
   },
 ];
 
-const makeCSS = ({
-  cssLoaderOptions,
-  sassLoaderOptions,
-  use = defaultCSSUse,
-} = {}) => {
+const makeCSS = ({ cssLoaderOptions, sassLoaderOptions, use = defaultCSSUse } = {}) => {
   if (!cssLoaderOptions && !sassLoaderOptions) {
     return { test: /\.s?css$/, use };
   }
