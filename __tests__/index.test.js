@@ -21,16 +21,6 @@ describe('makeWebpackConfig', () => {
   const defaultConfig = makeWebpackConfig();
   const newRules = [{ test: /\.js$/, use: [{ loader: 'other-loader' }] }];
 
-  const originalWarn = console.warn;
-
-  beforeEach(() => {
-    console.warn = jest.fn();
-  });
-
-  afterEach(() => {
-    console.warn = originalWarn;
-  });
-
   it('Rules include js and css by default', () => {
     expect(defaultConfig.module.rules.length).toBe(DEFAULT_RULES_LENGTH);
     expect(defaultConfig.module.rules[0]).toEqual(makeJS());
@@ -46,6 +36,11 @@ describe('makeWebpackConfig', () => {
     const ts = { test: /\.tsx?$/, foo: 'bar' };
     const config = makeWebpackConfig({ ts });
     expect(config.module.rules.find(rule => rule.test.test('.tsx'))).toEqual(ts);
+  });
+
+  it('passing ts adds extensions to resolve', () => {
+    const config = makeWebpackConfig({ ts: true });
+    expect(config.resolve.extensions).toEqual(['.ts', '.tsx', '.js', '.json']);
   });
 
   it('User can add to `rules` array', () => {
@@ -139,13 +134,6 @@ describe('makeWebpackConfig', () => {
     `('User can update $option', ({ option, value }) => {
       const config = makeWebpackConfig({ [option]: value });
       expect(config[option]).toBe(value);
-      expect(console.warn).not.toBeCalled();
-    });
-
-    it('warns (but allows) unrecognized config options', () => {
-      const config = makeWebpackConfig({ foo: 'bar' });
-      expect(config.foo).toBe('bar');
-      expect(console.warn).toBeCalled();
     });
   });
 });

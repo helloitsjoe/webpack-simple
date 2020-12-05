@@ -121,10 +121,7 @@ const makeCSS = ({ cssLoaderOptions, sassLoaderOptions, use = defaultCSSUse } = 
 const defaultWebpackRules = [makeJS(), makeCSS()];
 
 const makeWebpackConfig = (options = {}) => {
-  const {
-    js,
-    ts,
-    css,
+  let {
     node,
     serve,
     stats,
@@ -146,11 +143,7 @@ const makeWebpackConfig = (options = {}) => {
     ...rest
   } = options;
 
-  if (Object.keys(rest).length) {
-    for (const key in rest) {
-      console.warn(`${key} is unrecognized, but it will be added to the config.`);
-    }
-  }
+  const { js, ts, css, ...webpackOptions } = options;
 
   let customRules = rules;
 
@@ -164,10 +157,12 @@ const makeWebpackConfig = (options = {}) => {
 
   if (ts) {
     customRules = [...rules, ts === true ? makeTS() : ts];
+    resolve = { extensions: ['.ts', '.tsx', '.js', '.json'] };
   }
 
   return {
-    ...options,
+    ...webpackOptions,
+    resolve,
     mode,
     target,
     module: {
