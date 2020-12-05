@@ -8,6 +8,7 @@ const {
   defaultCSSUse,
   defaultCSSLoaderOptions,
   makeJS,
+  makeTS,
   makeCSS,
 } = require('../index');
 
@@ -17,7 +18,7 @@ const DEFAULT_EXCLUDE_LENGTH = 2;
 const customUse = [{ loader: 'other-loader', options: { foo: 'bar' } }];
 
 describe('makeWebpackConfig', () => {
-  const config = makeWebpackConfig();
+  const defaultConfig = makeWebpackConfig();
   const newRules = [{ test: /\.js$/, use: [{ loader: 'other-loader' }] }];
 
   const originalWarn = console.warn;
@@ -31,9 +32,20 @@ describe('makeWebpackConfig', () => {
   });
 
   it('Rules include js and css by default', () => {
-    expect(config.module.rules.length).toBe(DEFAULT_RULES_LENGTH);
-    expect(config.module.rules[0]).toEqual(makeJS());
-    expect(config.module.rules[1]).toEqual(makeCSS());
+    expect(defaultConfig.module.rules.length).toBe(DEFAULT_RULES_LENGTH);
+    expect(defaultConfig.module.rules[0]).toEqual(makeJS());
+    expect(defaultConfig.module.rules[1]).toEqual(makeCSS());
+  });
+
+  it('Passing ts: true adds default typescript', () => {
+    const config = makeWebpackConfig({ ts: true });
+    expect(config.module.rules.find(rule => rule.test.test('.tsx'))).toEqual(makeTS());
+  });
+
+  it('Passing ts object adds custom typescript config', () => {
+    const ts = { test: /\.tsx?$/, foo: 'bar' };
+    const config = makeWebpackConfig({ ts });
+    expect(config.module.rules.find(rule => rule.test.test('.tsx'))).toEqual(ts);
   });
 
   it('User can add to `rules` array', () => {
@@ -72,7 +84,7 @@ describe('makeWebpackConfig', () => {
   });
 
   it('default config', () => {
-    expect(config).toEqual({
+    expect(defaultConfig).toEqual({
       mode: 'development',
       target: 'web',
       module: {
@@ -306,5 +318,23 @@ describe('makeCSS', () => {
   it('throws if SASS options with no SASS loader', () => {
     const options = { use: [], sassLoaderOptions: { foo: true } };
     expect(() => makeCSS(options)).toThrow('SASS loader options provided but no SASS loader found');
+  });
+});
+
+describe('makeTS', () => {
+  it('basic TS config', () => {
+    expect(makeTS()).toEqual({
+      test: /\.tsx?$/,
+      exclude: [/node_modules/],
+      use: [{ loader: 'ts-loader' }],
+    });
+  });
+
+  it('user can override exclude and use', () => {
+    expect(makeTS({ exclude: [/other-dir/], use: [{ foo: 'bar' }] })).toEqual({
+      test: /\.tsx?$/,
+      exclude: [/other-dir/],
+      use: [{ foo: 'bar' }],
+    });
   });
 });

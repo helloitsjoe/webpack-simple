@@ -49,11 +49,13 @@ const makeJS = ({
   };
 };
 
-// const makeTS = () => ({
-//   test: /\.tsx?$/,
-//   exclude: [/node_modules/],
-//   use: [{ loader: 'ts-loader' }],
-// });
+const defaultTSExclude = [/node_modules/];
+const defaultTSUse = [{ loader: 'ts-loader' }];
+const makeTS = ({ exclude = defaultTSExclude, use = defaultTSUse } = {}) => ({
+  test: /\.tsx?$/,
+  exclude,
+  use,
+});
 
 const defaultCSSLoaderOptions = { modules: true };
 const defaultCSSUse = [
@@ -121,6 +123,7 @@ const defaultWebpackRules = [makeJS(), makeCSS()];
 const makeWebpackConfig = (options = {}) => {
   const {
     js,
+    ts,
     css,
     node,
     serve,
@@ -159,6 +162,10 @@ const makeWebpackConfig = (options = {}) => {
     customRules = rules.map(rule => (rule.test.test('.css') ? css : rule));
   }
 
+  if (ts) {
+    customRules = [...rules, ts === true ? makeTS() : ts];
+  }
+
   return {
     ...options,
     mode,
@@ -172,6 +179,7 @@ const makeWebpackConfig = (options = {}) => {
 module.exports = {
   makeWebpackConfig,
   makeJS,
+  makeTS,
   makeCSS,
   defaultWebpackRules,
   defaultBabelPlugins,
