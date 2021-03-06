@@ -1,6 +1,6 @@
 {
   "name": "webpack-simple",
-  "version": "1.7.1",
+  "version": "1.7.3",
   "description": "Webpack Config - Simple defaults, extendable options",
   "main": "index.js",
   "scripts": {
@@ -31,11 +31,12 @@
   "devDependencies": {
     "coveralls": "^3.0.11",
     "husky": "^2.7.0",
-    "jest": "^24.9.0",
+    "jest": "^26.6.3",
     "prettier": "^1.19.1"
   },
   "peerDependencies": {
-    "webpack": "^4"
+    "babel-loader": "^8",
+    "webpack": "^4 || ^5"
   },
   "files": [
     "index.js",
