@@ -1,11 +1,13 @@
 {
   "name": "webpack-simple",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "description": "Webpack Config - Simple defaults, extendable options",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
+    "preversion": "yarn test",
+    "version": "npx helloitsjoe/release-toolkit changelog"
   },
   "repository": {
     "type": "git",
