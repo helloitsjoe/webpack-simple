@@ -1,3 +1,9 @@
+## [1.7.4](https://github.com/helloitsjoe/webpack-simple/releases/tag/v1.7.4) (2021-05-11)
+
+**Chore**
+
+- Upgrade `jest`
+
 ## [1.7.3](https://github.com/helloitsjoe/webpack-simple/releases/tag/v1.7.3) 2021/03/06
 
 - Bump Jest to v26
