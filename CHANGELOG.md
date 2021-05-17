@@ -1,3 +1,9 @@
+## [1.7.5](https://github.com/helloitsjoe/webpack-simple/releases/tag/v1.7.5) (2021-05-16)
+
+**Chore**
+
+- Release pipeline
+
 ## [1.7.4](https://github.com/helloitsjoe/webpack-simple/releases/tag/v1.7.4) (2021-05-11)
 
 **Chore**
