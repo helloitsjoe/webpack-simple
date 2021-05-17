@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "preversion": "yarn test",
-    "version": "npx helloitsjoe/release-toolkit changelog"
+    "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
