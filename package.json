@@ -1,6 +1,6 @@
 {
   "name": "webpack-simple",
-  "version": "1.7.6",
+  "version": "1.7.7",
   "description": "Webpack Config - Simple defaults, extendable options",
   "main": "index.js",
   "scripts": {
