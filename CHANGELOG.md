@@ -1,3 +1,9 @@
+## [1.7.8](https://github.com/helloitsjoe/webpack-simple/releases/tag/v1.7.8) (2021-10-08)
+
+**Chore**
+
+Update dependencies
+
 ## [1.7.7](https://github.com/helloitsjoe/webpack-simple/releases/tag/v1.7.7) (2021-08-12)
 
 **Chore**
