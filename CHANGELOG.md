@@ -1,3 +1,9 @@
+## [1.7.9](https://github.com/helloitsjoe/webpack-simple/releases/tag/v1.7.9) (2022-03-28)
+
+**Chore**
+
+Bump minimist to 1.2.6
+
 ## [1.7.8](https://github.com/helloitsjoe/webpack-simple/releases/tag/v1.7.8) (2021-10-08)
 
 **Chore**
