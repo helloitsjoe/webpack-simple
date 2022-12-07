@@ -1,3 +1,10 @@
+## [1.7.10](https://github.com/helloitsjoe/webpack-simple/releases/tag/v1.7.10) (2022-12-07)
+
+**Chore**
+
+- Bump decode-uri-component from 0.2.0 to 0.2.2
+- Bump minimatch from 3.0.4 to 3.1.2
+
 ## [1.7.9](https://github.com/helloitsjoe/webpack-simple/releases/tag/v1.7.9) (2022-03-28)
 
 **Chore**
