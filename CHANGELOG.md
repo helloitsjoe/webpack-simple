@@ -1,3 +1,9 @@
+## [1.7.11](https://github.com/helloitsjoe/webpack-simple/releases/tag/v1.7.11) (2022-12-07)
+
+**Chore**
+
+- Bump qs from 6.5.2 to 6.5.3
+
 ## [1.7.10](https://github.com/helloitsjoe/webpack-simple/releases/tag/v1.7.10) (2022-12-07)
 
 **Chore**
